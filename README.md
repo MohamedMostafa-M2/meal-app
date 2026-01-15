@@ -21,6 +21,9 @@ A modern, responsive web application for exploring and discovering delicious mea
 
 [Live Demo](https://youtu.be/M4g1F52Ikyc)
 
+## 🔗 Live Demo
+👉 https://mohamedmostafa-m2.github.io/meal-app/
+
 ## 🛠️ Technologies Used
 
 - **Vue.js 3** - Progressive JavaScript framework
