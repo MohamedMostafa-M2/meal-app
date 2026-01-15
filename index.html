@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meal App</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Start Navbar -->
+      <div class="navbar navbar-expand-lg bg-body-tertiary shadow fixed-top">
+        <div class="container-fluid">
+          <a
+            class="navbar-brand"
+            target="_blank"
+            href="https://github.com/MohamedMostafa-M2"
+            ><img class="logo" src="imgs/m2.ico" alt="logo"
+          /></a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <button
+                  class="nav-link"
+                  :class="{active: currentTab === 'all'}"
+                  @click="currentTab = 'all'"
+                >
+                  All Meals
+                  <span class="badge bg-light text-dark ms-1"
+                    >{{ meals.length }}</span
+                  >
+                </button>
+              </li>
+              <li class="nav-item">
+                <button
+                  class="nav-link"
+                  :class="{ active: currentTab === 'favorites' }"
+                  @click="currentTab = 'favorites'"
+                >
+                  Favorite
+                  <span class="badge bg-light text-dark ms-1"
+                    >{{ favorites.length }}</span
+                  >
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- End Navbar -->
+      <!-- Start Header -->
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-12 mb-3">
+            <div class="input-group">
+              <span class="input-group-text bg-primary text-white"> 🔍 </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search for a meal... Example: chicken, pasta"
+                v-model="searchQuery"
+                @input="searchMeals"
+              />
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="input-group">
+              <span class="input-group-text bg-success text-white"> 🏷️ </span>
+              <select
+                class="form-select"
+                v-model="selectedCategory"
+                @change="filterByCategory"
+              >
+                <option value="">All Categories</option>
+                <option
+                  v-for="category in categories"
+                  :key="category"
+                  :value="category"
+                >
+                  {{ category }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Header -->
+      <!-- Loading & Error -->
+      <div v-if="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hiden">Loading .... </span>
+        </div>
+        <p class="mt-3 fs-5">Loading meals ....</p>
+      </div>
+      <div v-if="error" class="alert alert-danger text-center" role="alert">
+        {{ error }}
+      </div>
+      <div
+        v-if="!loading && !error && currentMeals.length === 0"
+        class="alert alert-info text-center"
+      >
+        <h4 v-if="currentTab === 'all'">We didn't find any meals</h4>
+        <h4 v-else>No meals in favorites</h4>
+        <p v-if="currentTab === 'all'">
+          Try searching with another keyword or choose a different category
+        </p>
+        <p v-else>Start adding your favorite meals by tapping</p>
+      </div>
+      <!-- End Loading & error -->
+      <!-- Show Page -->
+      <div class="container">
+        <div
+          v-if="!loading && !error && currentMeals.length > 0"
+          class="row g-4"
+        >
+          <div
+            class="col-lg-4 col-md-6 col-12 p-4 mt-5"
+            v-for="meal in currentDisplayedMeals"
+            :key="meal.idMeal"
+          >
+            <div class="card shadow-sm h-100 meal-card">
+              <button
+                class="favorite-btn"
+                :class="{ 'is-favorite': isFavorite(meal.idMeal) }"
+                @click="toggleFavorite(meal)"
+                title="Add To Favorite"
+              >
+                <span v-if="isFavorite(meal.idMeal)">❤️</span>
+                <span v-else>🤍</span>
+              </button>
+              <img
+                :src="meal.strMealThumb"
+                class="card-img-top meal-image"
+                :alt="meal.strMeal"
+                @click="showMealDetails(meal)"
+                style="cursor: pointer"
+                title="Show Details"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{meal.strMeal}}</h5>
+                <span class="badge bg-success mb-2">{{meal.strCategory}}</span>
+                <p class="card-text text-muted mb-3">
+                  <small>🌍 {{ meal.strArea }}</small>
+                </p>
+                <button
+                  class="btn btn-primary btn-sm w-100"
+                  @click="showMealDetails(meal)"
+                >
+                  View details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="!loading && !error && currentTab === 'all' && meals.length > mealsToShow"
+          class="text-center mt-4"
+        >
+          <button class="btn btn-primary btn-lg" @click="loadMore">
+            Load More
+            <span class="badge bg-light text-primary ms-2">
+              {{ meals.length - mealsToShow }}
+            </span>
+          </button>
+        </div>
+        <div
+          v-if="!loading && !error && currentTab === 'all' && meals.length > 0 && mealsToShow >= meals.length"
+          class="text-center mt-4"
+        >
+          <p class="text-muted">
+            All meals ({{ meals.length }} meal<span v-if="meals.length > 1"
+              >s</span
+            >) have been displayed
+          </p>
+        </div>
+      </div>
+      <!-- Modal -->
+      <div class="modal fade" id="mealModal" tabindex="-1" v-if="selectedMeal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title">{{ selectedMeal.strMeal }}</h5>
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                @click="closeModal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-5">
+                  <img
+                    :src="selectedMeal.strMealThumb"
+                    class="img-fluid rounded shadow"
+                    :alt="selectedMeal.strMeal"
+                  />
+                  <div class="mt-3">
+                    <span class="badge bg-success fs-6 me-2"
+                      >{{ selectedMeal.strCategory }}</span
+                    >
+                    <span class="badge bg-info fs-6"
+                      >{{ selectedMeal.strArea }}</span
+                    >
+                  </div>
+                </div>
+                <div class="col-md-7">
+                  <h6 class="text-primary mb-3">Ingredients:</h6>
+                  <ul class="ingredients-list">
+                    <li
+                      v-for="(ingredient, index) in getIngredients(selectedMeal)"
+                      :key="index"
+                    >
+                      <strong>{{ ingredient.ingredient }}</strong>
+                      <span class="text-muted">
+                        - {{ ingredient.measure }}</span
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-4" v-if="selectedMeal.strInstructions">
+                <h6 class="text-primary mb-3">Preparation method:</h6>
+                <p class="instructions-text">
+                  {{ selectedMeal.strInstructions }}
+                </p>
+              </div>
+
+              <div class="mt-4" v-if="selectedMeal.strYoutube">
+                <h6 class="text-primary mb-3">Watch the video:</h6>
+                <a
+                  :href="selectedMeal.strYoutube"
+                  target="_blank"
+                  class="btn btn-danger"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-youtube"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"
+                    />
+                  </svg>
+                  Watch on YouTube
+                </a>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                class="btn"
+                :class="isFavorite(selectedMeal.idMeal) ? 'btn-danger' : 'btn-outline-danger'"
+                @click="toggleFavorite(selectedMeal)"
+              >
+                <span v-if="isFavorite(selectedMeal.idMeal)"
+                  >❤️ Remove from Favorites</span
+                >
+                <span v-else>🤍 Add to Favorites</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="closeModal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-backdrop fade"
+        :class="{ show: showModal }"
+        v-if="showModal"
+        @click="closeModal"
+      ></div>
+      <!-- End -->
+      <!-- Footer -->
+      <footer class="bg-dark text-light pt-4">
+        <div class="container">
+          <div class="row align-items-center justify-content-between py-3">
+            <div class="col-md-4 d-flex align-items-center mb-3 mb-md-0">
+              <div class="p-2 rounded me-2">
+                <img class="logo" src="imgs/m2-white.ico" alt="" />
+              </div>
+              <span class="h5 mb-0">Meal App</span>
+            </div>
+            <div class="col-md-8">
+              <ul class="nav justify-content-md-end justify-content-start">
+                <li class="nav-item">
+                  <button
+                    class="nav-link text-light"
+                    :class="{active: currentTab === 'all'}"
+                    @click="currentTab = 'all'"
+                  >
+                    Meals
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link text-light"
+                    :class="{ active: currentTab === 'favorites' }"
+                    @click="currentTab = 'favorites'"
+                  >
+                    Favorite
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <hr class="border-light" />
+          <div class="row align-items-center justify-content-between py-2">
+            <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+              <small>© 2024 Meal App. All rights reserved.</small>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+              <small
+                >Made by
+                <strong
+                  ><a
+                    href="https://github.com/MohamedMostafa-M2"
+                    target="_blank"
+                    style="text-decoration: none; color: #fff"
+                    >Mohamed Mostafa</a
+                  ></strong
+                ></small
+              >
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <!-- End Footer -->
+      <!-- Div for ID APP -->
+    </div>
+    <script src="javascript/vue.global.js"></script>
+    <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script src="javascript/main.js"></script>
+  </body>
+</html>
