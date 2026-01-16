@@ -1,0 +1,331 @@
+@import url(https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap);
+
+.ingredients-list li:last-child,
+.modal-header {
+    border-bottom: none
+}
+
+* {
+    font-family: Cairo, sans-serif
+}
+
+body {
+    background: #c1c7cd;
+    min-height: 100vh;
+    padding-top: 65px
+}
+
+.logo {
+    width: 30px
+}
+
+.meal-card {
+    transition: transform .3s, box-shadow .3s;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative
+}
+
+.meal-card:hover {
+    transform: translateY(10px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .25);
+    cursor: pointer
+}
+
+.meal-card img.card-img-top {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform .3s
+}
+
+.meal-card:hover img.card-img-top {
+    transform: scale(1.05)
+}
+
+.card.title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 8px
+}
+
+.badge {
+    font-size: 13px;
+    padding: 6px 12px;
+    font-weight: 500
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+    transition: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .3)
+}
+
+.favorite-btn.is-favorite {
+    background: #ffe6e6;
+    animation: .5s heartbeat
+}
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1)
+    }
+
+    25% {
+        transform: scale(1.2)
+    }
+
+    50% {
+        transform: scale(1.1)
+    }
+}
+
+.nav-pills .nav-link {
+    border-radius: 50px;
+    padding: .7rem 1.5rem;
+    font-weight: 600;
+    margin: 0 .5rem;
+    transition: .3s
+}
+
+.nav-pills .nav-link:not(.active) {
+    background-color: #f8f9fa;
+    color: #495057
+}
+
+.nav-pills .nav-link.active,
+header {
+    background: linear-gradient(135deg, #667eea 0, #764ba2 100%)
+}
+
+.nav-pills .nav-link:not(.active):hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px)
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden
+}
+
+.modal-footer,
+footer {
+    border-top: 1px solid #dee2e6
+}
+
+.modal-header {
+    padding: 1.5rem
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 70vh;
+    overflow-y: auto
+}
+
+.modal-footer {
+    padding: 1rem 2rem
+}
+
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin: 0
+}
+
+.ingredients-list li {
+    padding: .5rem 0;
+    border-bottom: 1px solid #f0f0f0
+}
+
+.instructions-text {
+    line-height: 1.8;
+    color: #555;
+    text-align: justify;
+    white-space: pre-line;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, .5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity .15s linear
+}
+
+.modal-backdrop.show {
+    opacity: 1
+}
+
+.modal.fade .modal-dialog {
+    transition: transform .3s ease-out;
+    transform: translate(0, -50px)
+}
+
+.modal.show .modal-dialog {
+    transform: none
+}
+
+header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, .1)
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: .5rem
+}
+
+footer {
+    margin-top: auto
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem
+}
+
+.input-group-text {
+    font-size: 1.2rem;
+    border: none
+}
+
+.form-control,
+.form-select {
+    border: 2px solid #e9ecef;
+    padding: .6rem 1rem;
+    font-size: 1rem
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 .2rem rgba(102, 126, 234, .25)
+}
+
+.form-select {
+    cursor: pointer
+}
+
+.btn-lg {
+    border-radius: 50px;
+    font-weight: 600;
+    transition: .3s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, .3)
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, .4)
+}
+
+.btn-lg .badge {
+    font-size: .9rem
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #f97316, #dc2626, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text
+}
+
+.social-icon {
+    transition: .4s cubic-bezier(.4, 0, .2, 1)
+}
+
+.social-icon:hover {
+    transform: translateY(-8px) scale(1.1)
+}
+
+.footer-link {
+    position: relative;
+    transition: .3s
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    right: 0;
+    background: linear-gradient(90deg, #f97316, #dc2626);
+    transition: width .3s
+}
+
+.footer-link:hover::after {
+    width: 100%
+}
+
+.wave {
+    animation: 3s ease-in-out infinite wave
+}
+
+@keyframes wave {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1)
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.05)
+    }
+}
+
+.float {
+    animation: 6s ease-in-out infinite float
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0)
+    }
+
+    50% {
+        transform: translateY(-20px)
+    }
+}
+
+.glow {
+    box-shadow: 0 0 20px rgba(249, 115, 22, .3)
+}
+
+.gradient-border {
+    background: linear-gradient(white, #fff) padding-box, linear-gradient(135deg, #f97316, #dc2626, #ec4899) border-box;
+    border: 3px solid transparent
+}
